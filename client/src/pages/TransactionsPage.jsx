@@ -8,7 +8,8 @@ import {
 import toast from 'react-hot-toast';
 import { fetchTransactions, deleteTransaction, setFilters, clearFilters } from '../redux/slices/transactionSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatCurrency, formatDate, CATEGORIES, CATEGORY_COLORS } from '../utils/formatters';
+import { formatDate, CATEGORIES, CATEGORY_COLORS } from '../utils/formatters';
+import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 import DatePicker from '../components/common/DatePicker';
 import { exportToCSV, exportToExcel, exportToPDF, exportToPNG } from '../utils/exportUtils';
@@ -24,8 +25,7 @@ const PAYMENT_BADGE = {
 const TransactionsPage = () => {
   const dispatch = useDispatch();
   const { list, total, pages, currentPage, loading, filters } = useSelector((s) => s.transactions);
-  const { user } = useSelector((s) => s.auth);
-  const currency = user?.currency || 'NPR';
+  const { currency, format: formatAmount } = useCurrency();
   const [showFilters, setShowFilters] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -266,7 +266,7 @@ const TransactionsPage = () => {
                         <span className={`text-xs font-medium px-2 py-1 rounded-full ${PAYMENT_BADGE[t.paymentMethod] || 'bg-gray-100 text-gray-600'}`}>{t.paymentMethod}</span>
                       </td>
                       <td className={`px-5 py-4 font-bold text-sm ${t.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount, currency)}
+                        {t.type === 'income' ? '+' : '-'}{formatAmount(t.amount)}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1">
@@ -297,7 +297,7 @@ const TransactionsPage = () => {
                   </div>
                   <div className="text-right">
                     <p className={`font-bold text-sm ${t.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
-                      {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount, currency)}
+                      {t.type === 'income' ? '+' : '-'}{formatAmount(t.amount)}
                     </p>
                     <div className="flex gap-1 justify-end mt-1">
                       <button onClick={() => handleEdit(t)} className="p-1 text-gray-400 hover:text-primary-500"><MdEdit /></button>

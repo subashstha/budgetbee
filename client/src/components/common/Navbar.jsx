@@ -4,6 +4,7 @@ import { MdMenu, MdDarkMode, MdLightMode, MdAdd } from 'react-icons/md';
 import { GiBee } from 'react-icons/gi';
 import { toggleSidebar, toggleTheme, openModal, setEditingTransaction } from '../../redux/slices/uiSlice';
 import { updateProfile, updateUserLocal } from '../../redux/slices/authSlice';
+import { fetchRates } from '../../redux/slices/exchangeRateSlice';
 import { CURRENCIES } from '../../utils/formatters';
 import CustomSelect from './CustomSelect';
 
@@ -28,6 +29,7 @@ const Navbar = () => {
   const handleCurrencyChange = (currency) => {
     dispatch(updateUserLocal({ currency }));
     dispatch(updateProfile({ name: user?.name, currency }));
+    dispatch(fetchRates('NPR'));
   };
 
   return (

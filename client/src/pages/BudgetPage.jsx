@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MdEdit, MdSave, MdWarning, MdCheckCircle, MdAdd } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { fetchBudget, saveBudget, fetchBudgetHistory } from '../redux/slices/budgetSlice';
-import { formatCurrency, getMonthName, CATEGORY_COLORS } from '../utils/formatters';
+import { getMonthName, CATEGORY_COLORS } from '../utils/formatters';
+import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 
 const EXPENSE_CATS = ['Food','Transportation','Shopping','Bills','Entertainment','Health','Education','Travel','Saving','SIP','Cooperative','Salary','Others'];
@@ -11,8 +12,7 @@ const EXPENSE_CATS = ['Food','Transportation','Shopping','Bills','Entertainment'
 const BudgetPage = () => {
   const dispatch = useDispatch();
   const { current: budget, totalSpent, history, loading } = useSelector((s) => s.budget);
-  const { user } = useSelector((s) => s.auth);
-  const currency = user?.currency || 'NPR';
+  const { currency, format } = useCurrency();
 
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -107,7 +107,7 @@ const BudgetPage = () => {
         <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/30 rounded-2xl">
           <MdWarning className="text-red-500 text-2xl flex-shrink-0" />
           <p className="text-red-700 dark:text-red-400 text-sm font-medium">
-            Budget exceeded! You've spent {formatCurrency(totalSpent - (budget?.totalBudget || 0), currency)} over your budget.
+            Budget exceeded! You've spent {format(totalSpent - (budget?.totalBudget || 0))} over your budget.
           </p>
         </div>
       )}
@@ -176,15 +176,15 @@ const BudgetPage = () => {
                 <p className="text-gray-400 text-sm">Alert at {budget.alertThreshold}%</p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">{formatCurrency(budget.totalBudget, currency)}</p>
+                <p className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">{format(budget.totalBudget)}</p>
                 <p className="text-sm text-gray-400">Total budget</p>
               </div>
             </div>
 
             <div className="space-y-2 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Spent: <strong className="text-gray-700 dark:text-gray-200">{formatCurrency(totalSpent, currency)}</strong></span>
-                <span className="text-gray-500 dark:text-gray-400">Remaining: <strong className={budgetExceeded ? 'text-red-500' : 'text-emerald-500'}>{formatCurrency(Math.max(budget.totalBudget - totalSpent, 0), currency)}</strong></span>
+                <span className="text-gray-500 dark:text-gray-400">Spent: <strong className="text-gray-700 dark:text-gray-200">{format(totalSpent)}</strong></span>
+                <span className="text-gray-500 dark:text-gray-400">Remaining: <strong className={budgetExceeded ? 'text-red-500' : 'text-emerald-500'}>{format(Math.max(budget.totalBudget - totalSpent, 0))}</strong></span>
               </div>
               <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
@@ -195,7 +195,7 @@ const BudgetPage = () => {
               <div className="flex justify-between text-xs text-gray-400">
                 <span>0</span>
                 <span className="font-semibold">{budgetPercent}% used</span>
-                <span>{formatCurrency(budget.totalBudget, currency)}</span>
+                <span>{format(budget.totalBudget)}</span>
               </div>
             </div>
 
@@ -224,7 +224,7 @@ const BudgetPage = () => {
                         <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full mb-1">
                           <div className={`h-full rounded-full ${exceeded ? 'bg-red-500' : pct >= 80 ? 'bg-yellow-500' : 'bg-gradient-primary'}`} style={{ width: `${pct}%` }} />
                         </div>
-                        <p className="text-xs text-gray-400">{formatCurrency(spent, currency)} of {formatCurrency(cb.limit, currency)}</p>
+                        <p className="text-xs text-gray-400">{format(spent)} of {format(cb.limit)}</p>
                       </div>
                     );
                   })}
@@ -259,7 +259,7 @@ const BudgetPage = () => {
                     <div className="h-full bg-gradient-primary rounded-full" style={{ width: '60%' }} />
                   </div>
                 </div>
-                <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{formatCurrency(b.totalBudget, currency)}</span>
+                <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{format(b.totalBudget)}</span>
               </div>
             ))}
           </div>

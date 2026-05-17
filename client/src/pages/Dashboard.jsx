@@ -8,11 +8,12 @@ import {
 import { fetchSummary } from '../redux/slices/transactionSlice';
 import { fetchBudget } from '../redux/slices/budgetSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatCurrency, formatRelativeDate, CATEGORY_COLORS } from '../utils/formatters';
+import { formatRelativeDate, CATEGORY_COLORS } from '../utils/formatters';
+import useCurrency from '../hooks/useCurrency';
 import ExpensePieChart from '../components/charts/ExpensePieChart';
 import MonthlyBarChart from '../components/charts/MonthlyBarChart';
 
-const StatCard = ({ icon: Icon, title, value, currency, iconBg, iconColor, valueColor, accent }) => (
+const StatCard = ({ icon: Icon, title, value, iconBg, iconColor, valueColor, accent }) => (
   <div className={`card card-hover p-4 sm:p-5 flex flex-col gap-3 sm:gap-4 ${accent ? 'ring-1 ring-emerald-200 dark:ring-emerald-800/50' : ''}`}>
     <div className="flex items-center justify-between">
       <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${iconBg}`}>
@@ -25,7 +26,7 @@ const StatCard = ({ icon: Icon, title, value, currency, iconBg, iconColor, value
     <div className="min-w-0">
       <p className="stat-label mb-1 sm:mb-1.5 text-[10px] sm:text-xs">{title}</p>
       <p className={`text-base sm:text-xl font-bold tabular-nums tracking-tight truncate ${valueColor}`}>
-        {formatCurrency(value, currency)}
+        {value}
       </p>
     </div>
   </div>
@@ -36,7 +37,7 @@ const Dashboard = () => {
   const { summary, categoryBreakdown, monthlyTrend, recentTransactions } = useSelector((s) => s.transactions);
   const { current: budget, totalSpent } = useSelector((s) => s.budget);
   const { user } = useSelector((s) => s.auth);
-  const currency = user?.currency || 'NPR';
+  const { currency, format } = useCurrency();
 
   useEffect(() => {
     dispatch(fetchSummary({}));
@@ -79,8 +80,7 @@ const Dashboard = () => {
         <StatCard
           icon={MdAccountBalance}
           title="Total Balance"
-          value={balance}
-          currency={currency}
+          value={format(balance)}
           iconBg={balance >= 0 ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'}
           iconColor={balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}
           valueColor={balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}
@@ -89,8 +89,7 @@ const Dashboard = () => {
         <StatCard
           icon={MdTrendingUp}
           title="Monthly Income"
-          value={summary?.totalIncome || 0}
-          currency={currency}
+          value={format(summary?.totalIncome || 0)}
           iconBg="bg-sky-50 dark:bg-sky-900/20"
           iconColor="text-sky-500 dark:text-sky-400"
           valueColor="text-gray-900 dark:text-white"
@@ -98,8 +97,7 @@ const Dashboard = () => {
         <StatCard
           icon={MdTrendingDown}
           title="Monthly Expenses"
-          value={summary?.totalExpense || 0}
-          currency={currency}
+          value={format(summary?.totalExpense || 0)}
           iconBg="bg-rose-50 dark:bg-rose-900/20"
           iconColor="text-rose-500 dark:text-rose-400"
           valueColor="text-gray-900 dark:text-white"
@@ -107,8 +105,7 @@ const Dashboard = () => {
         <StatCard
           icon={MdSavings}
           title="Net Savings"
-          value={Math.max(balance, 0)}
-          currency={currency}
+          value={format(Math.max(balance, 0))}
           iconBg="bg-violet-50 dark:bg-violet-900/20"
           iconColor="text-violet-500 dark:text-violet-400"
           valueColor="text-gray-900 dark:text-white"
@@ -132,8 +129,8 @@ const Dashboard = () => {
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Spent</span>
                 <span className={`text-base font-bold tabular-nums ${budgetExceed ? 'text-red-500' : 'text-gray-800 dark:text-gray-100'}`}>
-                  {formatCurrency(totalSpent, currency)}
-                  <span className="text-xs text-gray-400 font-normal ml-1">/ {formatCurrency(budget.totalBudget, currency)}</span>
+                  {format(totalSpent)}
+                  <span className="text-xs text-gray-400 font-normal ml-1">/ {format(budget.totalBudget)}</span>
                 </span>
               </div>
 
@@ -152,8 +149,8 @@ const Dashboard = () => {
                   </span>
                   <span className={budgetExceed ? 'text-red-500 font-semibold' : 'text-emerald-600 dark:text-emerald-400 font-semibold'}>
                     {budgetExceed
-                      ? `+${formatCurrency(totalSpent - budget.totalBudget, currency)}`
-                      : `${formatCurrency(budget.totalBudget - totalSpent, currency)} left`
+                      ? `+${format(totalSpent - budget.totalBudget)}`
+                      : `${format(budget.totalBudget - totalSpent)} left`
                     }
                   </span>
                 </div>
@@ -166,7 +163,7 @@ const Dashboard = () => {
                     <div key={item._id} className="flex items-center gap-2.5">
                       <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: CATEGORY_COLORS[item._id] }} />
                       <span className="text-sm text-gray-600 dark:text-gray-400 flex-1 truncate font-medium">{item._id}</span>
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-200 tabular-nums">{formatCurrency(item.total, currency)}</span>
+                      <span className="text-sm font-bold text-gray-700 dark:text-gray-200 tabular-nums">{format(item.total)}</span>
                     </div>
                   ))}
                 </div>
@@ -254,7 +251,7 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className={`font-bold text-sm tabular-nums ${t.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {t.type === 'income' ? '+' : '−'}{formatCurrency(t.amount, currency)}
+                    {t.type === 'income' ? '+' : '−'}{format(t.amount)}
                   </p>
                   <p className="text-xs text-gray-300 dark:text-gray-600 capitalize mt-0.5 font-medium">{t.type}</p>
                 </div>

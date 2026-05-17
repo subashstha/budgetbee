@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MdBarChart, MdPieChart, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { fetchSummary } from '../redux/slices/transactionSlice';
-import { formatCurrency, CATEGORY_COLORS, getMonthName } from '../utils/formatters';
+import { CATEGORY_COLORS, getMonthName } from '../utils/formatters';
+import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 import ExpensePieChart from '../components/charts/ExpensePieChart';
 import MonthlyBarChart from '../components/charts/MonthlyBarChart';
@@ -11,8 +12,7 @@ import TrendLineChart from '../components/charts/TrendLineChart';
 const AnalyticsPage = () => {
   const dispatch = useDispatch();
   const { summary, categoryBreakdown, monthlyTrend } = useSelector((s) => s.transactions);
-  const { user } = useSelector((s) => s.auth);
-  const currency = user?.currency || 'NPR';
+  const { currency, format } = useCurrency();
 
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
@@ -61,7 +61,7 @@ const AnalyticsPage = () => {
             </div>
             <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">{label}</p>
             <p className={`text-xl font-extrabold ${color}`}>
-              {custom || formatCurrency(value, currency)}
+              {custom || format(value)}
             </p>
           </div>
         ))}
@@ -113,7 +113,7 @@ const AnalyticsPage = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-gray-400">{pct}%</span>
-                      <span className="text-sm font-bold text-gray-800 dark:text-gray-100">{formatCurrency(item.total, currency)}</span>
+                      <span className="text-sm font-bold text-gray-800 dark:text-gray-100">{format(item.total)}</span>
                     </div>
                   </div>
                   <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">

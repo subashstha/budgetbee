@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMe } from './redux/slices/authSlice';
 import { setTheme } from './redux/slices/uiSlice';
+import { fetchRates } from './redux/slices/exchangeRateSlice';
 
 import Layout from './components/common/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -21,7 +22,7 @@ import SettingsPage from './pages/SettingsPage';
 
 function App() {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { theme } = useSelector((state) => state.ui);
 
   useEffect(() => {
@@ -38,6 +39,10 @@ function App() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     dispatch(setTheme(savedTheme));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) dispatch(fetchRates('NPR'));
+  }, [isAuthenticated, dispatch]);
 
   return (
     <BrowserRouter>
