@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const fetchRates = createAsyncThunk('rates/fetch', async (baseCurrency = 'NPR') => {
-  const res = await fetch(`https://api.frankfurter.app/latest?from=${baseCurrency}`);
+  const res = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`);
   const data = await res.json();
-  return { base: baseCurrency, rates: { ...data.rates, [baseCurrency]: 1 } };
+  if (data.result !== 'success') throw new Error('Rate fetch failed');
+  return { base: baseCurrency, rates: data.rates };
 });
 
 const exchangeRateSlice = createSlice({

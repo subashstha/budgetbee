@@ -8,6 +8,10 @@ import {
   MdDarkMode, MdLightMode,
 } from 'react-icons/md';
 import { toggleTheme } from '../redux/slices/uiSlice';
+import { updateProfile, updateUserLocal } from '../redux/slices/authSlice';
+import { fetchRates } from '../redux/slices/exchangeRateSlice';
+import { CURRENCIES } from '../utils/formatters';
+import CustomSelect from '../components/common/CustomSelect';
 
 const features = [
   { icon: MdBarChart,            title: 'Smart Analytics',     desc: 'Visualize spending with interactive charts and detailed monthly breakdowns.' },
@@ -48,7 +52,15 @@ const gridBg = {
 const LandingPage = () => {
   const dispatch = useDispatch();
   const { theme } = useSelector((s) => s.ui);
+  const { user } = useSelector((s) => s.auth);
   const isDark = theme === 'dark';
+  const currentCurrency = user?.currency || 'NPR';
+
+  const handleCurrencyChange = (currency) => {
+    dispatch(updateUserLocal({ currency }));
+    if (user) dispatch(updateProfile({ name: user.name, currency }));
+    dispatch(fetchRates('NPR'));
+  };
 
   const scrollTo = (id) => (e) => {
     e.preventDefault();
@@ -80,6 +92,13 @@ const LandingPage = () => {
             <a href="#testimonials" onClick={scrollTo('testimonials')} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Reviews</a>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
+            <CustomSelect
+              value={currentCurrency}
+              onChange={handleCurrencyChange}
+              options={CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} ${c.symbol}` }))}
+              className="w-[100px]"
+              compact
+            />
             <button
               onClick={() => dispatch(toggleTheme())}
               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
