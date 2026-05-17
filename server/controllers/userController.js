@@ -1,6 +1,5 @@
 const User = require('../models/User');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
 
 // @route PUT /api/users/profile
 const updateProfile = async (req, res, next) => {
@@ -59,17 +58,17 @@ const uploadAvatar = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    // Delete old avatar
-    const user = await User.findById(req.user._id);
-    if (user.avatar) {
-      const oldPath = path.join(__dirname, '../uploads', path.basename(user.avatar));
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-    }
+    // Upload buffer to Cloudinary, overwrite by user ID so old image is replaced
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: 'budgetbee/avatars', public_id: req.user._id.toString(), overwrite: true, resource_type: 'image' },
+        (err, data) => (err ? reject(err) : resolve(data))
+      ).end(req.file.buffer);
+    });
 
-    const avatarUrl = `/uploads/${req.file.filename}`;
-    await User.findByIdAndUpdate(req.user._id, { avatar: avatarUrl });
+    await User.findByIdAndUpdate(req.user._id, { avatar: result.secure_url });
 
-    res.json({ success: true, avatar: avatarUrl });
+    res.json({ success: true, avatar: result.secure_url });
   } catch (error) {
     next(error);
   }
