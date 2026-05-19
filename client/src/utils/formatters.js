@@ -34,11 +34,6 @@ export const getMonthName = (month) => {
   return months[month - 1] || '';
 };
 
-export const CATEGORIES = {
-  expense: ['Food','Transportation','Shopping','Bills','Entertainment','Health','Education','Travel','Saving','SIP','Cooperative','Salary','Others'],
-  income: ['Salary','Freelance','Investment','Cooperative','Gift','Others'],
-};
-
 export const CATEGORY_COLORS = {
   Food: '#f97316',
   Transportation: '#3b82f6',
@@ -56,6 +51,11 @@ export const CATEGORY_COLORS = {
   Investment: '#14b8a6',
   Gift: '#e879f9',
   Others: '#94a3b8',
+};
+
+export const getCategoryColor = (categories, name) => {
+  const found = categories?.find((c) => c.name === name);
+  return found?.color || CATEGORY_COLORS[name] || '#94a3b8';
 };
 
 export const PAYMENT_METHODS = ['Bank Transfer', 'Cash', 'Credit Card', 'Debit Card', 'UPI', 'Others'];

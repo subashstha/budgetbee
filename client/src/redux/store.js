@@ -4,6 +4,7 @@ import transactionReducer from './slices/transactionSlice';
 import budgetReducer from './slices/budgetSlice';
 import uiReducer from './slices/uiSlice';
 import exchangeRateReducer from './slices/exchangeRateSlice';
+import categoryReducer from './slices/categorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     budget: budgetReducer,
     ui: uiReducer,
     rates: exchangeRateReducer,
+    categories: categoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: { ignoredActions: ['persist/PERSIST'] } }),

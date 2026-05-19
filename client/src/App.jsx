@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getMe } from './redux/slices/authSlice';
 import { setTheme } from './redux/slices/uiSlice';
 import { fetchRates } from './redux/slices/exchangeRateSlice';
+import { fetchCategories } from './redux/slices/categorySlice';
 
 import Layout from './components/common/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -17,6 +18,7 @@ import Dashboard from './pages/Dashboard';
 import TransactionsPage from './pages/TransactionsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import BudgetPage from './pages/BudgetPage';
+import CategoriesPage from './pages/CategoriesPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 
@@ -41,12 +43,15 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthenticated) dispatch(fetchRates('NPR'));
+    if (isAuthenticated) {
+      dispatch(fetchRates('NPR'));
+      dispatch(fetchCategories());
+    }
   }, [isAuthenticated, dispatch]);
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <div className="min-h-screen bg-slate-100 dark:bg-gray-900 transition-colors duration-200">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} />
@@ -58,6 +63,7 @@ function App() {
             <Route path="/transactions" element={<TransactionsPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/budget" element={<BudgetPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>

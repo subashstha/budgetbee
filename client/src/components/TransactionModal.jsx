@@ -4,20 +4,26 @@ import { MdClose } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { createTransaction, updateTransaction, fetchSummary, fetchTransactions } from '../redux/slices/transactionSlice';
 import { closeModal } from '../redux/slices/uiSlice';
-import { CATEGORIES, PAYMENT_METHODS, formatDateInput } from '../utils/formatters';
+import { PAYMENT_METHODS, formatDateInput } from '../utils/formatters';
 import CustomSelect from './common/CustomSelect';
 import DatePicker from './common/DatePicker';
 
 const TransactionModal = () => {
   const dispatch = useDispatch();
   const { editingTransaction } = useSelector((state) => state.ui);
+  const allCategories = useSelector((state) => state.categories.list);
   const isEditing = !!editingTransaction;
+
+  const getCategoriesForType = (type) =>
+    allCategories
+      .filter((c) => c.type === type || c.type === 'both')
+      .map((c) => c.name);
 
   const [form, setForm] = useState({
     title: '',
     amount: '',
     type: 'expense',
-    category: 'Food',
+    category: '',
     paymentMethod: 'Bank Transfer',
     date: formatDateInput(new Date()),
     notes: '',
@@ -31,7 +37,7 @@ const TransactionModal = () => {
         title: editingTransaction.title || '',
         amount: editingTransaction.amount || '',
         type: editingTransaction.type || 'expense',
-        category: editingTransaction.category || 'Food',
+        category: editingTransaction.category || '',
         paymentMethod: editingTransaction.paymentMethod || 'Bank Transfer',
         date: formatDateInput(editingTransaction.date || new Date()),
         notes: editingTransaction.notes || '',
@@ -41,14 +47,20 @@ const TransactionModal = () => {
     }
   }, [editingTransaction]);
 
-  const categories = CATEGORIES[form.type] || CATEGORIES.expense;
+  const categories = getCategoriesForType(form.type);
+
+  useEffect(() => {
+    if (!form.category && categories.length > 0) {
+      setForm((f) => ({ ...f, category: categories[0] }));
+    }
+  }, [categories]);
 
   const handleTypeChange = (type) => {
-    const newCategories = CATEGORIES[type];
+    const newCategories = getCategoriesForType(type);
     setForm((f) => ({
       ...f,
       type,
-      category: newCategories[0],
+      category: newCategories[0] || '',
     }));
   };
 

@@ -14,7 +14,7 @@ const Layout = () => {
 
       <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${sidebarOpen ? 'lg:ml-60' : 'lg:ml-[72px]'}`}>
         <Navbar />
-        <main className="flex-1 overflow-y-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:pb-6">
+        <main className="flex-1 overflow-y-auto bg-slate-100 dark:bg-gray-900 px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:pb-6">
           <div className="max-w-7xl mx-auto animate-fade-in">
             <Outlet />
           </div>

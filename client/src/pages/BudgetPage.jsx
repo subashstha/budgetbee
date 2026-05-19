@@ -3,15 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MdEdit, MdSave, MdWarning, MdCheckCircle, MdAdd } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { fetchBudget, saveBudget, fetchBudgetHistory } from '../redux/slices/budgetSlice';
-import { getMonthName, CATEGORY_COLORS } from '../utils/formatters';
+import { getMonthName, getCategoryColor } from '../utils/formatters';
 import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
-
-const EXPENSE_CATS = ['Food','Transportation','Shopping','Bills','Entertainment','Health','Education','Travel','Saving','SIP','Cooperative','Salary','Others'];
 
 const BudgetPage = () => {
   const dispatch = useDispatch();
   const { current: budget, totalSpent, history, loading } = useSelector((s) => s.budget);
+  const allCategories = useSelector((s) => s.categories.list);
+  const expenseCats = allCategories.filter((c) => c.type === 'expense' || c.type === 'both').map((c) => c.name);
   const { currency, format } = useCurrency();
 
   const now = new Date();
@@ -147,7 +147,7 @@ const BudgetPage = () => {
             <div>
               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Category Budgets (Optional)</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {EXPENSE_CATS.map((cat) => (
+                {expenseCats.map((cat) => (
                   <div key={cat}>
                     <label className="block text-xs text-gray-500 mb-1">{cat}</label>
                     <input
@@ -212,7 +212,7 @@ const BudgetPage = () => {
                       <div key={cb.category} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[cb.category] }} />
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getCategoryColor(allCategories, cb.category) }} />
                             <span className="font-medium text-gray-700 dark:text-gray-300">{cb.category}</span>
                           </div>
                           {exceeded

@@ -13,8 +13,10 @@ const authRoutes = require('./routes/auth');
 const transactionRoutes = require('./routes/transactions');
 const budgetRoutes = require('./routes/budget');
 const userRoutes = require('./routes/users');
+const categoryRoutes = require('./routes/categories');
 
-connectDB();
+const { seedDefaults } = require('./controllers/categoryController');
+connectDB().then(() => seedDefaults().catch(console.error));
 
 const app = express();
 
@@ -33,6 +35,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 

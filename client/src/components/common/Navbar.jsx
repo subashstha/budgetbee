@@ -13,6 +13,7 @@ const pageTitles = {
   '/transactions': { title: 'Transactions', subtitle: 'Manage income & expenses' },
   '/analytics':    { title: 'Analytics',    subtitle: 'Visualize spending habits' },
   '/budget':       { title: 'Budget',       subtitle: 'Track monthly budgets' },
+  '/categories':   { title: 'Categories',   subtitle: 'Manage your categories' },
   '/profile':      { title: 'Profile',      subtitle: 'Account details' },
   '/settings':     { title: 'Settings',     subtitle: 'App preferences' },
 };
@@ -33,7 +34,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6 h-14 flex items-center justify-between flex-shrink-0">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm dark:shadow-none px-4 md:px-6 h-14 flex items-center justify-between flex-shrink-0">
       {/* Left */}
       <div className="flex items-center gap-3">
         {/* Mobile logo */}

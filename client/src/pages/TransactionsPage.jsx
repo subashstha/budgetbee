@@ -8,7 +8,7 @@ import {
 import toast from 'react-hot-toast';
 import { fetchTransactions, deleteTransaction, setFilters, clearFilters } from '../redux/slices/transactionSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatDate, CATEGORIES, CATEGORY_COLORS } from '../utils/formatters';
+import { formatDate, getCategoryColor } from '../utils/formatters';
 import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 import DatePicker from '../components/common/DatePicker';
@@ -25,6 +25,7 @@ const PAYMENT_BADGE = {
 const TransactionsPage = () => {
   const dispatch = useDispatch();
   const { list, total, pages, currentPage, loading, filters } = useSelector((s) => s.transactions);
+  const categoryList = useSelector((s) => s.categories.list);
   const { currency, format: formatAmount } = useCurrency();
   const [showFilters, setShowFilters] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -33,7 +34,7 @@ const TransactionsPage = () => {
   const tableRef = useRef(null);
   const exportMenuRef = useRef(null);
 
-  const allCategories = [...CATEGORIES.expense, ...CATEGORIES.income];
+  const allCategories = [...new Set(categoryList.map((c) => c.name))];
 
   useEffect(() => {
     dispatch(fetchTransactions({ ...filters, page: currentPage }));
@@ -244,7 +245,7 @@ const TransactionsPage = () => {
                     <tr key={t._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: CATEGORY_COLORS[t.category] || '#10b981' }}>
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: getCategoryColor(categoryList, t.category) }}>
                             {t.category.charAt(0)}
                           </div>
                           <div>
@@ -288,7 +289,7 @@ const TransactionsPage = () => {
             <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-700/50">
               {list.map((t) => (
                 <div key={t._id} className="flex items-center gap-3 p-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: CATEGORY_COLORS[t.category] || '#10b981' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: getCategoryColor(categoryList, t.category) }}>
                     {t.category.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">

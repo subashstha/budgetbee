@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   MdDashboard, MdReceipt, MdBarChart, MdAccountBalanceWallet,
-  MdPerson, MdSettings, MdLogout,
+  MdPerson, MdSettings, MdLogout, MdCategory,
 } from 'react-icons/md';
 import { GiBee } from 'react-icons/gi';
 import { logout } from '../../redux/slices/authSlice';
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/transactions', icon: MdReceipt,            label: 'Transactions' },
   { to: '/analytics',   icon: MdBarChart,            label: 'Analytics' },
   { to: '/budget',      icon: MdAccountBalanceWallet, label: 'Budget' },
+  { to: '/categories',  icon: MdCategory,            label: 'Categories' },
   { to: '/profile',     icon: MdPerson,              label: 'Profile' },
   { to: '/settings',    icon: MdSettings,            label: 'Settings' },
 ];
@@ -31,7 +32,7 @@ const Sidebar = () => {
         hidden lg:flex
         fixed left-0 top-0 h-full flex-col z-30
         bg-white dark:bg-gray-950
-        border-r border-gray-100 dark:border-white/5
+        border-r border-gray-200 dark:border-white/5 shadow-md dark:shadow-none
         transition-all duration-300 ease-in-out
         ${isExpanded ? 'w-60' : 'w-[72px]'}
       `}
@@ -48,24 +49,6 @@ const Sidebar = () => {
           </div>
         )}
       </NavLink>
-
-      {/* User Info */}
-      {isExpanded && user && (
-        <div className="px-3 py-2.5 mx-3 mt-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
-              {user.avatar
-                ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                : user.name?.charAt(0).toUpperCase()
-              }
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{user.name}</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate font-medium">{user.email}</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Nav */}
       <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
@@ -100,8 +83,24 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      {/* Logout */}
-      <div className="p-3 border-t border-gray-100 dark:border-white/5">
+      {/* User Info + Logout */}
+      <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
+        {user && (
+          <div className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 mb-1 ${!isExpanded && 'justify-center'}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
+              {user.avatar
+                ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                : user.name?.charAt(0).toUpperCase()
+              }
+            </div>
+            {isExpanded && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{user.name}</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate font-medium">{user.email}</p>
+              </div>
+            )}
+          </div>
+        )}
         <button
           onClick={handleLogout}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-gray-400 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 dark:hover:text-red-400 transition-all duration-150 text-sm font-medium ${!isExpanded ? 'justify-center' : ''}`}

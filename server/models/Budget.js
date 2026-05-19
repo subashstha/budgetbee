@@ -27,20 +27,7 @@ const budgetSchema = new mongoose.Schema(
         category: {
           type: String,
           required: true,
-          enum: [
-            'Food',
-            'Transportation',
-            'Shopping',
-            'Bills',
-            'Entertainment',
-            'Health',
-            'Education',
-            'Travel',
-            'Saving',
-            'SIP',
-            'Cooperative',
-            'Others',
-          ],
+          trim: true,
         },
         limit: {
           type: Number,

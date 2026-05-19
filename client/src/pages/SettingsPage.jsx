@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   MdDarkMode, MdLightMode, MdNotifications, MdDelete,
-  MdDownload, MdInfo, MdArrowForward,
+  MdDownload, MdInfo, MdArrowForward, MdCategory,
 } from 'react-icons/md';
 import { GiBee as FaBee } from 'react-icons/gi';
 import toast from 'react-hot-toast';
@@ -102,6 +102,28 @@ const SettingsPage = () => {
           checked={notifications.budgetAlert}
           onChange={() => handleNotificationChange('budgetAlert')}
         />
+      </Section>
+
+      {/* Categories shortcut */}
+      <Section icon={MdCategory} title="Categories">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          Create custom categories for your expenses and income.
+        </p>
+        <Link
+          to="/categories"
+          className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-xl flex items-center justify-center">
+              <MdCategory className="text-primary-600 dark:text-primary-400 text-lg" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Manage Categories</p>
+              <p className="text-[11px] text-gray-400">Add · Filter · Delete</p>
+            </div>
+          </div>
+          <MdArrowForward className="text-gray-400 group-hover:text-primary-500 transition-colors" />
+        </Link>
       </Section>
 
       {/* Data & Export */}

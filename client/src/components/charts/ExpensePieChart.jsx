@@ -1,7 +1,9 @@
+import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { CATEGORY_COLORS } from '../../utils/formatters';
+import { getCategoryColor } from '../../utils/formatters';
 
 const ExpensePieChart = ({ data = [], currency = 'USD' }) => {
+  const allCategories = useSelector((s) => s.categories.list);
   if (!data.length) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400 dark:text-gray-500">
@@ -16,7 +18,7 @@ const ExpensePieChart = ({ data = [], currency = 'USD' }) => {
   const chartData = data.map((item) => ({
     name: item._id,
     value: item.total,
-    color: CATEGORY_COLORS[item._id] || '#94a3b8',
+    color: getCategoryColor(allCategories, item._id),
   }));
 
   const CustomTooltip = ({ active, payload }) => {

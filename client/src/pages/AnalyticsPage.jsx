@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MdBarChart, MdPieChart, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { fetchSummary } from '../redux/slices/transactionSlice';
-import { CATEGORY_COLORS, getMonthName } from '../utils/formatters';
+import { getCategoryColor, getMonthName } from '../utils/formatters';
 import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 import ExpensePieChart from '../components/charts/ExpensePieChart';
@@ -12,6 +12,7 @@ import TrendLineChart from '../components/charts/TrendLineChart';
 const AnalyticsPage = () => {
   const dispatch = useDispatch();
   const { summary, categoryBreakdown, monthlyTrend } = useSelector((s) => s.transactions);
+  const categoryList = useSelector((s) => s.categories.list);
   const { currency, format } = useCurrency();
 
   const now = new Date();
@@ -107,7 +108,7 @@ const AnalyticsPage = () => {
                 <div key={item._id}>
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[item._id] }} />
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getCategoryColor(categoryList, item._id) }} />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item._id}</span>
                       <span className="text-xs text-gray-400">({item.count} txns)</span>
                     </div>
@@ -119,7 +120,7 @@ const AnalyticsPage = () => {
                   <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${pct}%`, backgroundColor: CATEGORY_COLORS[item._id] }}
+                      style={{ width: `${pct}%`, backgroundColor: getCategoryColor(categoryList, item._id) }}
                     />
                   </div>
                 </div>

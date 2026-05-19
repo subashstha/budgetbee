@@ -8,7 +8,7 @@ import {
 import { fetchSummary } from '../redux/slices/transactionSlice';
 import { fetchBudget } from '../redux/slices/budgetSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatRelativeDate, CATEGORY_COLORS } from '../utils/formatters';
+import { formatRelativeDate, getCategoryColor } from '../utils/formatters';
 import useCurrency from '../hooks/useCurrency';
 import ExpensePieChart from '../components/charts/ExpensePieChart';
 import MonthlyBarChart from '../components/charts/MonthlyBarChart';
@@ -34,6 +34,7 @@ const StatCard = ({ icon: Icon, title, value, iconBg, iconColor, valueColor, acc
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const categoryList = useSelector((s) => s.categories.list);
   const { summary, categoryBreakdown, monthlyTrend, recentTransactions } = useSelector((s) => s.transactions);
   const { current: budget, totalSpent } = useSelector((s) => s.budget);
   const { user } = useSelector((s) => s.auth);
@@ -161,7 +162,7 @@ const Dashboard = () => {
                   <p className="stat-label mb-3">Top Categories</p>
                   {categoryBreakdown.slice(0, 4).map((item) => (
                     <div key={item._id} className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: CATEGORY_COLORS[item._id] }} />
+                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getCategoryColor(categoryList, item._id) }} />
                       <span className="text-sm text-gray-600 dark:text-gray-400 flex-1 truncate font-medium">{item._id}</span>
                       <span className="text-sm font-bold text-gray-700 dark:text-gray-200 tabular-nums">{format(item.total)}</span>
                     </div>
@@ -241,7 +242,7 @@ const Dashboard = () => {
               <div key={t._id} className="flex items-center gap-4 py-3 first:pt-0 last:pb-0 group">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                  style={{ backgroundColor: CATEGORY_COLORS[t.category] || '#10b981' }}
+                  style={{ backgroundColor: getCategoryColor(categoryList, t.category) }}
                 >
                   {t.category.charAt(0)}
                 </div>
