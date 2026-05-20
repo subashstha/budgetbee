@@ -13,7 +13,12 @@ const useDate = () => {
 
   const formatRelative = (date) => {
     if (!date) return '';
-    return isBS ? adToBS(date, false) : formatRelativeDate(date);
+    if (!isBS) return formatRelativeDate(date);
+    const diffDays = Math.floor((Date.now() - new Date(date)) / 86400000);
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return adToBS(date, false);
   };
 
   return { format, formatRelative, isBS, dateFormat };
