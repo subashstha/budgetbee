@@ -87,6 +87,23 @@ const Sidebar = () => {
 
       {/* User Info + Logout */}
       <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
+        {/* User info card */}
+        {user && (
+          <div className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 mb-1 ${!isExpanded && 'justify-center'}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
+              {user.avatar
+                ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                : user.name?.charAt(0).toUpperCase()
+              }
+            </div>
+            {isExpanded && (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{user.name}</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate font-medium">{user.email}</p>
+              </div>
+            )}
+          </div>
+        )}
         {/* Date format toggle */}
         <div className={`flex items-center gap-3 px-3 py-2 rounded-xl mb-1 ${!isExpanded && 'justify-center'}`}>
           <MdCalendarMonth className="text-[18px] text-gray-400 dark:text-gray-600 flex-shrink-0" />
@@ -120,22 +137,7 @@ const Sidebar = () => {
             </button>
           )}
         </div>
-        {user && (
-          <div className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 mb-1 ${!isExpanded && 'justify-center'}`}>
-            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
-              {user.avatar
-                ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                : user.name?.charAt(0).toUpperCase()
-              }
-            </div>
-            {isExpanded && (
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate leading-tight">{user.name}</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate font-medium">{user.email}</p>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Sign Out */}
         <button
           onClick={handleLogout}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-gray-400 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 dark:hover:text-red-400 transition-all duration-150 text-sm font-medium ${!isExpanded ? 'justify-center' : ''}`}
