@@ -8,7 +8,8 @@ import {
 import toast from 'react-hot-toast';
 import { fetchTransactions, deleteTransaction, setFilters, clearFilters } from '../redux/slices/transactionSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatDate, getCategoryColor } from '../utils/formatters';
+import { getCategoryColor } from '../utils/formatters';
+import useDate from '../hooks/useDate';
 import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 import DatePicker from '../components/common/DatePicker';
@@ -26,6 +27,7 @@ const TransactionsPage = () => {
   const dispatch = useDispatch();
   const { list, total, pages, currentPage, loading, filters } = useSelector((s) => s.transactions);
   const categoryList = useSelector((s) => s.categories.list);
+  const { format: formatDate } = useDate();
   const { currency, format: formatAmount } = useCurrency();
   const [showFilters, setShowFilters] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);

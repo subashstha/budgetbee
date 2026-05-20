@@ -5,12 +5,14 @@ import { GiBee as FaBee } from 'react-icons/gi';
 import toast from 'react-hot-toast';
 import { updateProfile, updateUserLocal } from '../redux/slices/authSlice';
 import api from '../services/api';
-import { CURRENCIES, formatDate } from '../utils/formatters';
+import { CURRENCIES } from '../utils/formatters';
+import useDate from '../hooks/useDate';
 import CustomSelect from '../components/common/CustomSelect';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
+  const { format: formatDate } = useDate();
 
   const [profileForm, setProfileForm] = useState({ name: user?.name || '', currency: user?.currency || 'NPR' });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });

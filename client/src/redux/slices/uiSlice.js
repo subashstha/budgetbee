@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const savedTheme = localStorage.getItem('theme') || 'light';
+const savedDateFormat = localStorage.getItem('dateFormat') || 'AD';
 
 const uiSlice = createSlice({
   name: 'ui',
   initialState: {
     theme: savedTheme,
+    dateFormat: savedDateFormat,
     sidebarOpen: true,
     sidebarMobileOpen: false,
     activeModal: null,
@@ -25,6 +27,10 @@ const uiSlice = createSlice({
       state.theme = action.payload;
       localStorage.setItem('theme', action.payload);
     },
+    toggleDateFormat: (state) => {
+      state.dateFormat = state.dateFormat === 'AD' ? 'BS' : 'AD';
+      localStorage.setItem('dateFormat', state.dateFormat);
+    },
     toggleSidebar: (state) => { state.sidebarOpen = !state.sidebarOpen; },
     toggleMobileSidebar: (state) => { state.sidebarMobileOpen = !state.sidebarMobileOpen; },
     closeMobileSidebar: (state) => { state.sidebarMobileOpen = false; },
@@ -35,7 +41,7 @@ const uiSlice = createSlice({
 });
 
 export const {
-  toggleTheme, setTheme, toggleSidebar, toggleMobileSidebar,
+  toggleTheme, setTheme, toggleDateFormat, toggleSidebar, toggleMobileSidebar,
   closeMobileSidebar, openModal, closeModal, setEditingTransaction,
 } = uiSlice.actions;
 export default uiSlice.reducer;

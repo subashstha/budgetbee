@@ -8,7 +8,8 @@ import {
 import { fetchSummary } from '../redux/slices/transactionSlice';
 import { fetchBudget } from '../redux/slices/budgetSlice';
 import { openModal, setEditingTransaction } from '../redux/slices/uiSlice';
-import { formatRelativeDate, getCategoryColor } from '../utils/formatters';
+import { getCategoryColor } from '../utils/formatters';
+import useDate from '../hooks/useDate';
 import useCurrency from '../hooks/useCurrency';
 import ExpensePieChart from '../components/charts/ExpensePieChart';
 import MonthlyBarChart from '../components/charts/MonthlyBarChart';
@@ -35,6 +36,7 @@ const StatCard = ({ icon: Icon, title, value, iconBg, iconColor, valueColor, acc
 const Dashboard = () => {
   const dispatch = useDispatch();
   const categoryList = useSelector((s) => s.categories.list);
+  const { formatRelative } = useDate();
   const { summary, categoryBreakdown, monthlyTrend, recentTransactions } = useSelector((s) => s.transactions);
   const { current: budget, totalSpent } = useSelector((s) => s.budget);
   const { user } = useSelector((s) => s.auth);
@@ -248,7 +250,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm truncate">{t.title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5 font-medium">{t.category} · {formatRelativeDate(t.date)}</p>
+                  <p className="text-xs text-gray-400 mt-0.5 font-medium">{t.category} · {formatRelative(t.date)}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className={`font-bold text-sm tabular-nums ${t.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
