@@ -44,3 +44,17 @@ export const getMonthNameBS = (month, year, useDevanagari = false) => {
   const y = useDevanagari ? toNpDigits(year) : year;
   return `${m} ${y}`;
 };
+
+// Convert AD month (1-12) + AD year to BS label using the 15th as representative date
+export const getBSFromAD = (adMonth, adYear) => {
+  try {
+    const bs = new NepaliDate(new Date(adYear, adMonth - 1, 15));
+    return {
+      month: bs.getMonth() + 1,
+      year: bs.getYear(),
+      monthName: BS_MONTHS_EN[bs.getMonth()],
+    };
+  } catch {
+    return { month: adMonth, year: adYear, monthName: BS_MONTHS_EN[adMonth - 1] };
+  }
+};

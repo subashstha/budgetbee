@@ -2,10 +2,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   MdDashboard, MdReceipt, MdBarChart, MdAccountBalanceWallet,
-  MdPerson, MdSettings, MdLogout, MdCategory,
+  MdPerson, MdSettings, MdLogout, MdCategory, MdCalendarMonth,
 } from 'react-icons/md';
 import { GiBee } from 'react-icons/gi';
 import { logout } from '../../redux/slices/authSlice';
+import { toggleDateFormat } from '../../redux/slices/uiSlice';
 
 const navItems = [
   { to: '/dashboard',    icon: MdDashboard,          label: 'Dashboard' },
@@ -23,6 +24,7 @@ const Sidebar = () => {
   const { sidebarOpen } = useSelector((s) => s.ui);
   const { user }  = useSelector((s) => s.auth);
 
+  const { dateFormat } = useSelector((s) => s.ui);
   const handleLogout = () => { dispatch(logout()); navigate('/login'); };
   const isExpanded   = sidebarOpen;
 
@@ -85,6 +87,39 @@ const Sidebar = () => {
 
       {/* User Info + Logout */}
       <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
+        {/* Date format toggle */}
+        <div className={`flex items-center gap-3 px-3 py-2 rounded-xl mb-1 ${!isExpanded && 'justify-center'}`}>
+          <MdCalendarMonth className="text-[18px] text-gray-400 dark:text-gray-600 flex-shrink-0" />
+          {isExpanded && (
+            <>
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex-1">Date</span>
+              <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+                {['AD', 'BS'].map((fmt) => (
+                  <button
+                    key={fmt}
+                    onClick={() => dateFormat !== fmt && dispatch(toggleDateFormat())}
+                    className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all duration-150 ${
+                      dateFormat === fmt
+                        ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
+                    }`}
+                  >
+                    {fmt}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {!isExpanded && (
+            <button
+              onClick={() => dispatch(toggleDateFormat())}
+              title={`Date: ${dateFormat} — click to switch`}
+              className="text-[9px] font-bold text-gray-400 dark:text-gray-600"
+            >
+              {dateFormat}
+            </button>
+          )}
+        </div>
         {user && (
           <div className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 mb-1 ${!isExpanded && 'justify-center'}`}>
             <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">

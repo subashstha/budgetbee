@@ -4,6 +4,7 @@ import { MdEdit, MdSave, MdWarning, MdCheckCircle, MdAdd } from 'react-icons/md'
 import toast from 'react-hot-toast';
 import { fetchBudget, saveBudget, fetchBudgetHistory } from '../redux/slices/budgetSlice';
 import { getMonthName, getCategoryColor } from '../utils/formatters';
+import { getBSFromAD } from '../utils/nepaliDate';
 import useCurrency from '../hooks/useCurrency';
 import CustomSelect from '../components/common/CustomSelect';
 
@@ -11,8 +12,20 @@ const BudgetPage = () => {
   const dispatch = useDispatch();
   const { current: budget, totalSpent, history, loading } = useSelector((s) => s.budget);
   const allCategories = useSelector((s) => s.categories.list);
+  const dateFormat = useSelector((s) => s.ui.dateFormat);
+  const isBS = dateFormat === 'BS';
   const expenseCats = allCategories.filter((c) => c.type === 'expense' || c.type === 'both').map((c) => c.name);
   const { currency, format } = useCurrency();
+
+  const getMonthLabel = (adMonth, adYear) => {
+    if (!isBS) return getMonthName(adMonth);
+    return getBSFromAD(adMonth, adYear).monthName;
+  };
+
+  const getYearLabel = (adYear) => {
+    if (!isBS) return String(adYear);
+    return String(getBSFromAD(7, adYear).year);
+  };
 
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -80,13 +93,13 @@ const BudgetPage = () => {
         <CustomSelect
           value={month}
           onChange={(val) => setMonth(parseInt(val))}
-          options={Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: getMonthName(i + 1) }))}
+          options={Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: getMonthLabel(i + 1, year) }))}
           className="w-36"
         />
         <CustomSelect
           value={year}
           onChange={(val) => setYear(parseInt(val))}
-          options={[now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1].map((y) => ({ value: y, label: String(y) }))}
+          options={[now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1].map((y) => ({ value: y, label: getYearLabel(y) }))}
           className="w-24"
         />
         <button onClick={() => setEditing(!editing)} className={editing ? 'btn-secondary text-sm' : 'btn-primary text-sm flex items-center gap-2'}>
@@ -172,7 +185,7 @@ const BudgetPage = () => {
           <div>
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h3 className="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">{getMonthName(month)} {year} Budget</h3>
+                <h3 className="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">{getMonthLabel(month, year)} {getYearLabel(year)} Budget</h3>
                 <p className="text-gray-400 text-sm">Alert at {budget.alertThreshold}%</p>
               </div>
               <div className="text-right">
@@ -252,7 +265,7 @@ const BudgetPage = () => {
             {history.slice(0, 6).map((b) => (
               <div key={b._id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
                 <div className="min-w-[80px]">
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">{getMonthName(b.month)} {b.year}</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">{getMonthLabel(b.month, b.year)} {getYearLabel(b.year)}</p>
                 </div>
                 <div className="flex-1">
                   <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full">

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { MdMenu, MdDarkMode, MdLightMode, MdAdd } from 'react-icons/md';
 import { GiBee } from 'react-icons/gi';
-import { toggleSidebar, toggleTheme, toggleDateFormat, openModal, setEditingTransaction } from '../../redux/slices/uiSlice';
+import { toggleSidebar, toggleTheme, openModal, setEditingTransaction } from '../../redux/slices/uiSlice';
 import { updateProfile, updateUserLocal } from '../../redux/slices/authSlice';
 import { fetchRates } from '../../redux/slices/exchangeRateSlice';
 import { CURRENCIES } from '../../utils/formatters';
@@ -20,7 +20,7 @@ const pageTitles = {
 
 const Navbar = () => {
   const dispatch  = useDispatch();
-  const { theme, dateFormat } = useSelector((s) => s.ui);
+  const { theme } = useSelector((s) => s.ui);
   const { user }  = useSelector((s) => s.auth);
   const location  = useLocation();
   const page      = pageTitles[location.pathname] || { title: 'BudgetBee', subtitle: '' };
@@ -78,17 +78,6 @@ const Navbar = () => {
           className="w-[100px]"
           compact
         />
-
-        {/* Date format toggle */}
-        <button
-          onClick={() => dispatch(toggleDateFormat())}
-          title={dateFormat === 'AD' ? 'Switch to Nepali (BS)' : 'Switch to English (AD)'}
-          className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          <span className={dateFormat === 'AD' ? 'text-primary-500' : 'text-gray-400'}>AD</span>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
-          <span className={dateFormat === 'BS' ? 'text-primary-500' : 'text-gray-400'}>BS</span>
-        </button>
 
         {/* Theme toggle */}
         <button
