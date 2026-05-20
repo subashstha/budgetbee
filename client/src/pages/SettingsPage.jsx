@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   MdDarkMode, MdLightMode, MdNotifications, MdDelete,
-  MdDownload, MdInfo, MdArrowForward, MdCategory,
+  MdDownload, MdInfo, MdArrowForward, MdCategory, MdCalendarMonth,
 } from 'react-icons/md';
 import { GiBee as FaBee } from 'react-icons/gi';
 import toast from 'react-hot-toast';
-import { toggleTheme } from '../redux/slices/uiSlice';
+import { toggleTheme, toggleDateFormat } from '../redux/slices/uiSlice';
 import { updateProfile, logout } from '../redux/slices/authSlice';
 import api from '../services/api';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const SettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((s) => s.auth);
-  const { theme } = useSelector((s) => s.ui);
+  const { theme, dateFormat } = useSelector((s) => s.ui);
   const [notifications, setNotifications] = useState(user?.notifications || { email: true, budgetAlert: true });
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
@@ -85,6 +85,32 @@ const SettingsPage = () => {
               {t === 'light' ? '☀️' : '🌙'} {t}
             </button>
           ))}
+        </div>
+
+        {/* Date format */}
+        <div className="flex items-center justify-between py-3 mt-2 border-t border-gray-100 dark:border-gray-700/50">
+          <div className="flex items-center gap-2">
+            <MdCalendarMonth className="text-primary-500 text-lg" />
+            <div>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Date Format</p>
+              <p className="text-xs text-gray-400 mt-0.5">AD (Gregorian) or BS (Bikram Sambat)</p>
+            </div>
+          </div>
+          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
+            {['AD', 'BS'].map((fmt) => (
+              <button
+                key={fmt}
+                onClick={() => dateFormat !== fmt && dispatch(toggleDateFormat())}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all duration-150 ${
+                  dateFormat === fmt
+                    ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow-sm'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
+                }`}
+              >
+                {fmt}
+              </button>
+            ))}
+          </div>
         </div>
       </Section>
 
