@@ -3,7 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { MdCalendarToday, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { forwardRef } from 'react';
 import { useSelector } from 'react-redux';
-import { adToBS, getBSFromAD } from '../../utils/nepaliDate';
+import { adToBS } from '../../utils/nepaliDate';
 
 const strToDate = (s) => {
   if (!s) return null;
@@ -47,11 +47,7 @@ const DatePicker = ({ value, onChange, placeholder, className = '' }) => {
     prevMonthButtonDisabled,
     nextMonthButtonDisabled,
   }) => {
-    const adLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const adMonth = date.getMonth() + 1;
-    const adYear = date.getFullYear();
-    const bs = getBSFromAD(adMonth, adYear);
-    const label = isBS ? `${adLabel} · ${bs.monthName} ${bs.year}` : adLabel;
+    const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     return (
       <div className="flex items-center justify-between px-2 py-1">
