@@ -47,11 +47,11 @@ const DatePicker = ({ value, onChange, placeholder, className = '' }) => {
     prevMonthButtonDisabled,
     nextMonthButtonDisabled,
   }) => {
+    const adLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     const adMonth = date.getMonth() + 1;
     const adYear = date.getFullYear();
-    const label = isBS
-      ? `${getBSFromAD(adMonth, adYear).monthName} ${getBSFromAD(adMonth, adYear).year}`
-      : date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const bs = getBSFromAD(adMonth, adYear);
+    const label = isBS ? `${adLabel} · ${bs.monthName} ${bs.year}` : adLabel;
 
     return (
       <div className="flex items-center justify-between px-2 py-1">
