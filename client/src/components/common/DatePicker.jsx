@@ -2,6 +2,7 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { MdCalendarToday, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { forwardRef, useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { useSelector } from 'react-redux';
 import { adToBS } from '../../utils/nepaliDate';
 import NepaliDate from 'nepali-date-converter';
@@ -159,18 +160,34 @@ CustomInput.displayName = 'CustomInput';
 const DatePicker = ({ value, onChange, placeholder, className = '' }) => {
   const isBS = useSelector((s) => s.ui.dateFormat) === 'BS';
   const [open, setOpen] = useState(false);
-  const wrapperRef = useRef(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+  const popupRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     const handleOutside = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+      if (
+        btnRef.current && !btnRef.current.contains(e.target) &&
+        popupRef.current && !popupRef.current.contains(e.target)
+      ) setOpen(false);
     };
     document.addEventListener('mousedown', handleOutside);
     return () => document.removeEventListener('mousedown', handleOutside);
   }, [open]);
+
+  const handleToggle = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      const calendarHeight = 320;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top = spaceBelow >= calendarHeight
+        ? rect.bottom + 4
+        : rect.top - calendarHeight - 4;
+      setPopupPos({ top, left: rect.left });
+    }
+    setOpen((o) => !o);
+  };
 
   if (!isBS) {
     return (
@@ -192,10 +209,11 @@ const DatePicker = ({ value, onChange, placeholder, className = '' }) => {
   const displayValue = value ? adToBS(strToDate(value), false) : '';
 
   return (
-    <div ref={wrapperRef} className={`relative ${className}`}>
+    <div className={className}>
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggle}
         className="input-field w-full flex items-center justify-between gap-2 text-left cursor-pointer"
       >
         <span className={displayValue ? 'text-gray-800 dark:text-gray-100' : 'text-gray-400'}>
@@ -204,13 +222,17 @@ const DatePicker = ({ value, onChange, placeholder, className = '' }) => {
         <MdCalendarToday className="text-emerald-500 text-base flex-shrink-0" />
       </button>
 
-      {open && (
-        <div className="absolute z-50 top-full mt-1 left-0">
+      {open && ReactDOM.createPortal(
+        <div
+          ref={popupRef}
+          style={{ position: 'fixed', top: popupPos.top, left: popupPos.left, zIndex: 9999 }}
+        >
           <BSCalendar
             value={value}
             onChange={(val) => { onChange(val); setOpen(false); }}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
